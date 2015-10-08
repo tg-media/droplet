@@ -6,21 +6,29 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" 
-            fx:controller="droplet.DropletController" prefHeight="500" prefWidth="600">
+            fx:controller="droplet.DropletController">
     <padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
     <top>
         <HBox spacing="8">
-            <Button text="Choose Files" fx:id="chooseFilesButton" onAction="#handleChooseFileClick" ></Button>
-            <ChoiceBox fx:id="overlayChoiceBox" ></ChoiceBox>
+            <Button fx:id="chooseOverlayButton" text="Choose Overlay" onAction="#handleChooseOverlayClick"></Button>
+            <Label fx:id="overlayNameLabel">No Overlay Selected</Label>
             <padding><Insets bottom="8"/></padding>
         </HBox>
     </top>
     <left>
         <VBox spacing="8">
             <ListView fx:id="imagesListView"></ListView>
-            <Button text="Process" fx:id="processFilesButton"></Button>
+            <HBox spacing="8">
+                <Button text="Choose Files" fx:id="chooseFilesButton" onAction="#handleChooseFileClick" ></Button>
+                <Label fx:id="noneSelectedLabel">No Files Selected</Label>
+            </HBox>
+            <HBox spacing="8">
+                <Button text="Process" fx:id="processFilesButton" onAction="#handleProcessFilesClick"></Button>
+                <Label fx:id="completionLabel" visible="true">Done.</Label>
+            </HBox>
         </VBox>
     </left>
 </BorderPane>
