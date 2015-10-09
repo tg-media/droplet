@@ -1,13 +1,9 @@
 package droplet;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,10 +13,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -36,7 +31,8 @@ public class DropletController implements Initializable {
     @FXML private BorderPane mainPane;
     @FXML private Label noneSelectedLabel;
     @FXML private Label overlayNameLabel;
-    @FXML private Label completionLabel;
+    @FXML private Label progressLabel;
+    @FXML private ProgressBar progressBar;
     @FXML private ListView<String> imagesListView;
         
     @FXML
@@ -57,14 +53,14 @@ public class DropletController implements Initializable {
     @FXML
     private void handleChooseOverlayClick(ActionEvent event) {
         Node node = (Node) event.getSource();
-        File chosenFile = overlayFile = fileChooser.showOpenDialog(node.getScene().getWindow());
+        File chosenFile = fileChooser.showOpenDialog(node.getScene().getWindow());
         
         if(chosenFile != null) {
-            overlayNameLabel.setText(overlayFile.getName());
             overlayFile = chosenFile;
+            overlayNameLabel.setText(overlayFile.getName());
         } else {
-            overlayNameLabel.setText("No Overlay Selected");
             overlayFile = null;
+            overlayNameLabel.setText("No Overlay Selected");
         }
     }
     
@@ -72,29 +68,16 @@ public class DropletController implements Initializable {
     private void handleProcessFilesClick(ActionEvent event) {
         if(fileList != null) {
             noneSelectedLabel.setVisible(false);
-
             if(overlayFile != null) {
-                String outputFolderPath = System.getProperty("user.home") + "/Desktop/" + "processed_files/";
-                File outputFolder = new File(outputFolderPath);
-                outputFolder.mkdirs();
+                Node node = (Node) event.getSource();
+//                progressLabel.setVisible(true);
+                ProcessImageTask task = new ProcessImageTask(fileList, overlayFile);
+                progressBar.progressProperty().bind(task.progressProperty());
                 
-                fileList.stream()
-                    .forEach((File file) -> {
-                        DropletImage dropletImage = new DropletImage(file);
-                        dropletImage.setOverlayImage(overlayFile);
-
-                        try {
-                            String fileName = UUID.randomUUID().toString().substring(0, 8) + ".png";
-                            ImageIO.write(dropletImage.getTransformedImage(), "PNG", new File(outputFolder.getAbsolutePath() + "/" + fileName));
-                        } catch (IOException ex) {
-                            Logger.getLogger(DropletController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    });
-                completionLabel.setVisible(true);
-
-                        
+                final Thread thread = new Thread(task, "process-files");
+                thread.setDaemon(true);
+                thread.start();
             }
-            
         } else {
             noneSelectedLabel.setVisible(true);
         }

@@ -40,14 +40,14 @@ public class DropletImage {
         BufferedImage resizedImage = Scalr.resize(
             this.baseImage,
             Scalr.Method.BALANCED,
-            Scalr.Mode.AUTOMATIC,
-            640,
-            480,
+            Scalr.Mode.FIT_TO_HEIGHT,
+            this.overlayImage.getWidth(),
+            this.overlayImage.getHeight(),
             Scalr.OP_ANTIALIAS
         );
         
-        int w = Math.max(resizedImage.getWidth(), this.overlayImage.getWidth());
-        int h = Math.max(resizedImage.getHeight(), this.overlayImage.getHeight());
+        int w = this.overlayImage.getWidth();
+        int h = this.overlayImage.getHeight();
         BufferedImage combined = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         
         Graphics2D g = combined.createGraphics();

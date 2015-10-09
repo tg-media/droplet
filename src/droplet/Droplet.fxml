@@ -27,7 +27,8 @@
             </HBox>
             <HBox spacing="8">
                 <Button text="Process" fx:id="processFilesButton" onAction="#handleProcessFilesClick"></Button>
-                <Label fx:id="completionLabel" visible="true">Done.</Label>
+<!--                <Label fx:id="progressLabel" visible="false"></Label>-->
+                <ProgressBar fx:id="progressBar" progress="0"></ProgressBar> 
             </HBox>
         </VBox>
     </left>
